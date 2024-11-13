@@ -1,0 +1,87 @@
+/* UserHomepage.module.css */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.locationButton {
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.loading {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.error {
+    color: red;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.lists {
+    margin-top: 20px;
+}
+
+.listItem {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.listItem:hover {
+    background-color: #ececec;
+}
+
+.listName {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.listDetails {
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.noLists {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.noLists p {
+    font-size: 1.1rem;
+    color: #666;
+}
