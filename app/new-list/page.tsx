@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Usa 'next/navigation' invece di 'next/router'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@/components/ui/ActionButton"; // Usa ActionButton al posto di Button per evitare conflitti
 import { TagInput } from "@/components/ui/tag-input";
-import { ProductList } from "@/components/product-list";
-import newListStyles from "./styles/NewList.module.css";
+import { ProductList } from "@/components/ProductList"; // Import del componente appena creato
+import { ToggleSwitch } from "@/components/ui/ToggleSwitch"; // Import del ToggleSwitch
+import newListStyles from "./styles/NewList.module.css"; // Import del file CSS creato
 
 const NewListPage = () => {
     const router = useRouter();
-    const { supermarketId } = router.query;
     const [listTitle, setListTitle] = useState("");
     const [products, setProducts] = useState([]);
-    const [budget, setBudget] = useState(0);
+    const [budget, setBudget] = useState("");
     const [mode, setMode] = useState("convenience");
     const [recommendedProducts, setRecommendedProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,37 +30,50 @@ const NewListPage = () => {
         setProducts(updatedProducts);
     };
 
-    const handleBudgetChange = (e) => {
-        setBudget(e.target.value);
-    };
-
-    const handleModeToggle = () => {
-        setMode(mode === "convenience" ? "savings" : "convenience");
-    };
-
     const handleCalculate = async () => {
         setIsLoading(true);
+        setError(null);
         try {
-            // Make API call to calculate the list based on the selected mode
             const response = await fetch("/api/calculate-list", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ products, budget, mode, supermarketId }),
+                body: JSON.stringify({ products, budget, mode }),
             });
+            if (!response.ok) {
+                throw new Error("Failed to calculate the list");
+            }
             const data = await response.json();
-            setRecommendedProducts(data.recommendedProducts);
+
+            // Verifica se il budget è sufficiente e gestisci la risposta di conseguenza
+            if (data.withinBudget) {
+                setRecommendedProducts(data.recommendedProducts);
+            } else {
+                setError(data.message); // Mostra l'errore se il budget non è sufficiente
+                setRecommendedProducts(data.recommendedProducts);
+            }
         } catch (err) {
-            setError("Failed to calculate the list");
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const handleToggleMode = () => {
+        setMode(mode === "convenience" ? "savings" : "convenience");
+    };
     const handleCreateList = async () => {
+        if (listTitle.trim() === "" || products.length === 0) {
+            setError("Please enter a list title and add at least one product.");
+            return;
+        }
+        setIsLoading(true);
+        setError(null);
         try {
-            // Make API call to create the new shopping list
+            console.log("Attempting to create list...");
+
+            // Chiamata API per creare la nuova lista
             const response = await fetch("/api/shopping-lists", {
                 method: "POST",
                 headers: {
@@ -71,14 +86,23 @@ const NewListPage = () => {
                     mode,
                 }),
             });
+
+            if (!response.ok) {
+                throw new Error("Failed to create the shopping list");
+            }
+
             const data = await response.json();
-            // Redirect to the specific list page
-            router.push(`/supermarket/${data.listId}`);
+
+            // Reindirizza alla homepage dell'utente per vedere la lista appena creata
+            console.log("List created successfully, redirecting...");
+            router.push("/user");
         } catch (err) {
-            setError("Failed to create the shopping list");
+            console.error("Error during list creation:", err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
         }
     };
-
     return (
         <div className={newListStyles.container}>
             <Card className={newListStyles.card}>
@@ -106,36 +130,38 @@ const NewListPage = () => {
                             type="number"
                             placeholder="Budget"
                             value={budget}
-                            onChange={handleBudgetChange}
+                            onChange={(e) => setBudget(e.target.value)}
                             suffix="€"
                         />
                     </div>
                     <div className={newListStyles.modeToggle}>
-                        <Button
-                            onClick={handleModeToggle}
-                            className={`${newListStyles.modeButton} ${
-                                mode === "convenience"
-                                    ? newListStyles.convenienceMode
-                                    : newListStyles.savingsMode
-                            }`}
-                        >
-                            {mode === "convenience"
-                                ? "Convenience Mode"
-                                : "Savings Mode"}
-                        </Button>
+                        <ToggleSwitch
+                            checked={mode === "savings"}
+                            onChange={handleToggleMode}
+                            labels={["Convenience", "Savings"]}
+                        />
                     </div>
                     <div className={newListStyles.actions}>
-                        <Button onClick={handleCalculate} disabled={isLoading}>
-                            {isLoading ? "Calculating..." : "Calculate"}
-                        </Button>
-                        <Button
-                            onClick={handleCreateList}
+                        <ActionButton
+                            onClick={handleCalculate}
                             disabled={
-                                isLoading || recommendedProducts.length === 0
+                                isLoading ||
+                                products.length === 0 ||
+                                budget === ""
+                            }
+                        >
+                            {isLoading ? "Calculating..." : "Calculate"}
+                        </ActionButton>
+                        <ActionButton
+                            onClick={handleCreateList} // Usa la funzione handleCreateList
+                            disabled={
+                                isLoading ||
+                                products.length === 0 ||
+                                listTitle.trim() === ""
                             }
                         >
                             Create List
-                        </Button>
+                        </ActionButton>
                     </div>
                     {recommendedProducts.length > 0 && (
                         <div className={newListStyles.recommendedProducts}>

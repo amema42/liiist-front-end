@@ -14,6 +14,7 @@ const UserHomepage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Recupera le liste di spesa quando il componente viene montato
         fetchShoppingLists();
     }, []);
 
@@ -21,7 +22,7 @@ const UserHomepage = () => {
         setIsLoading(true);
         setError(null);
         try {
-            // Make API call to fetch the user's shopping lists
+            // Chiamata API per recuperare le liste di spesa dell'utente
             const response = await fetch("/api/shopping-lists");
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -43,7 +44,8 @@ const UserHomepage = () => {
         router.push(`/supermarket/${listId}`);
     };
 
-    const handleNewListClick = () => {
+    const handleNewListClick = async () => {
+        // Naviga alla pagina per creare una nuova lista
         router.push("/new-list");
     };
 
@@ -115,8 +117,14 @@ const UserHomepage = () => {
                                     </div>
                                     <div className={userStyles.listDetails}>
                                         <div className={userStyles.listDate}>
-                                            Created: {list.createdAt}, Last
-                                            modified: {list.updatedAt}
+                                            Created:{" "}
+                                            {new Date(
+                                                list.createdAt,
+                                            ).toLocaleDateString()}
+                                            , Last modified:{" "}
+                                            {new Date(
+                                                list.updatedAt,
+                                            ).toLocaleDateString()}
                                         </div>
                                         <div className={userStyles.listBudget}>
                                             Budget: {list.budget}€
@@ -128,11 +136,13 @@ const UserHomepage = () => {
                     ) : (
                         <div className={userStyles.noLists}>
                             <p>You don't have any shopping lists yet.</p>
-                            <Button onClick={handleNewListClick}>
-                                Create New List
-                            </Button>
                         </div>
                     )}
+                    <div className={userStyles.newListButtonContainer}>
+                        <Button onClick={handleNewListClick}>
+                            Create New List
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>
