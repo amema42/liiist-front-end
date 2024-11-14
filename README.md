@@ -66,7 +66,25 @@
 2. **`/location-selection`** - **Working/Not Working**:
    - Funzionante per visualizzare la mappa e ottenere la posizione dell'utente.
    - **Not Working**: Caricamento e aggiornamento marker dinamici.
-3. **`/new-list`** - **Not Implemented**.
+3. **`/new-list`** - **IN PROGRESS**.
+Ora in `/new-list/page.tsx` l'utente può:
+    - Creare una lista con nome personalizzabile
+    - Inserire dei **prodotti**.
+    - Impostare un budget.
+    - Selezionare tramite un **Toggle** tra Risparmio/Comodità.
+        - (**Status** Calcolo prodotti in **modalità: Risparmio/Comodità** post creazione lista: **Not Working**)
+    - Salvare la lista (Questa viene salvata in **locale**, disponibile presso `/user`)
+
+    **Good To Know:** (endpoint API & Componenti )
+    - Creato un endpoint API che calcola i prodotti raccomandati, simulando dei prezzi casuali. (`pages/api/calculate-list.ts`)
+	- Componenti create:
+		- `ToggleSwitch.tsx`
+		 	- `ToggleSwitch.module.css`
+		- `tag-input.tsx`
+		- `ActionButton.tsx`
+    - Aggiunto la logica per verificare se il costo totale dei prodotti raccomandati rientra nel budget impostato dall'utente.
+        - Se il costo totale dei prodotti supera il budget, l'endpoint restituisce un messaggio all'utente che informa che il budget non è sufficiente, ma fornisce comunque la migliore combinazione possibile.
+
 4. **`/convenience-mode`** - **Not Implemented**.
 5. **`/savings-mode`** - **Not Implemented**.
 6. **`/supermarket/[supermarketId]`** - **Not Implemented**.

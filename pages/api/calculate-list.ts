@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
+// pages/api/calculate-list.ts
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse,
@@ -8,11 +8,9 @@ export default async function handler(
         const { products, budget, mode } = req.body;
 
         if (!products || typeof budget === "undefined" || !mode) {
-            return res
-                .status(400)
-                .json({
-                    error: "Missing required fields: products, budget, mode",
-                });
+            return res.status(400).json({
+                error: "Missing required fields: products, budget, mode",
+            });
         }
 
         // Genera prodotti consigliati con prezzi casuali per simulare una risposta
