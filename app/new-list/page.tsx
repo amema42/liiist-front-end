@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Usa 'next/navigation' invece di 'next/router'
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ActionButton } from "@/components/ui/ActionButton"; // Usa ActionButton al posto di Button per evitare conflitti
+import { ActionButton } from "@/components/ui/ActionButton";
 import { TagInput } from "@/components/ui/tag-input";
-import { ProductList } from "@/components/ProductList"; // Import del componente appena creato
-import { ToggleSwitch } from "@/components/ui/ToggleSwitch"; // Import del ToggleSwitch
-import newListStyles from "./styles/NewList.module.css"; // Import del file CSS creato
+import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
+import newListStyles from "./styles/NewList.module.css";
 
 const NewListPage = () => {
     const router = useRouter();
@@ -16,7 +15,6 @@ const NewListPage = () => {
     const [products, setProducts] = useState([]);
     const [budget, setBudget] = useState("");
     const [mode, setMode] = useState("convenience");
-    const [recommendedProducts, setRecommendedProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -30,50 +28,17 @@ const NewListPage = () => {
         setProducts(updatedProducts);
     };
 
-    const handleCalculate = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const response = await fetch("/api/calculate-list", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ products, budget, mode }),
-            });
-            if (!response.ok) {
-                throw new Error("Failed to calculate the list");
-            }
-            const data = await response.json();
-
-            // Verifica se il budget è sufficiente e gestisci la risposta di conseguenza
-            if (data.withinBudget) {
-                setRecommendedProducts(data.recommendedProducts);
-            } else {
-                setError(data.message); // Mostra l'errore se il budget non è sufficiente
-                setRecommendedProducts(data.recommendedProducts);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleToggleMode = () => {
-        setMode(mode === "convenience" ? "savings" : "convenience");
-    };
-    const handleCreateList = async () => {
+    const handleSaveList = async () => {
         if (listTitle.trim() === "" || products.length === 0) {
             setError("Please enter a list title and add at least one product.");
             return;
         }
+
         setIsLoading(true);
         setError(null);
-        try {
-            console.log("Attempting to create list...");
 
-            // Chiamata API per creare la nuova lista
+        try {
+            // Salva la lista facendo una chiamata POST
             const response = await fetch("/api/shopping-lists", {
                 method: "POST",
                 headers: {
@@ -84,25 +49,73 @@ const NewListPage = () => {
                     products,
                     budget,
                     mode,
+                    userId: "12345", // Placeholder, sostituire con l'ID utente effettivo
                 }),
             });
 
             if (!response.ok) {
-                throw new Error("Failed to create the shopping list");
+                throw new Error("Failed to save the shopping list");
             }
 
-            const data = await response.json();
-
-            // Reindirizza alla homepage dell'utente per vedere la lista appena creata
-            console.log("List created successfully, redirecting...");
+            // Dopo aver salvato la lista, torna alla homepage
             router.push("/user");
         } catch (err) {
-            console.error("Error during list creation:", err);
-            setError(err.message);
+            setError("Failed to save the shopping list");
         } finally {
             setIsLoading(false);
         }
     };
+
+    const handleCalculate = async () => {
+        if (listTitle.trim() === "" || products.length === 0) {
+            setError("Please enter a list title and add at least one product.");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // Salva la lista prima di calcolare
+            const response = await fetch("/api/shopping-lists", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: listTitle,
+                    products,
+                    budget,
+                    mode,
+                    userId: "12345", // Questo è un placeholder, sostituire con ID utente effettivo
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to save the shopping list");
+            }
+
+            const data = await response.json();
+
+            // Naviga alla modalità corretta con l'ID della lista salvata
+            const route =
+                mode === "savings" ? "/savings-mode" : "/convenience-mode";
+            router.push(
+                `${route}?id=${data.id}&listTitle=${listTitle}&budget=${budget}&products=${JSON.stringify(
+                    products,
+                )}`,
+            );
+        } catch (err) {
+            setError("Failed to save and calculate the shopping list");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleToggleMode = () => {
+        setMode(mode === "convenience" ? "savings" : "convenience");
+    };
+
     return (
         <div className={newListStyles.container}>
             <Card className={newListStyles.card}>
@@ -143,6 +156,16 @@ const NewListPage = () => {
                     </div>
                     <div className={newListStyles.actions}>
                         <ActionButton
+                            onClick={handleSaveList}
+                            disabled={
+                                isLoading ||
+                                products.length === 0 ||
+                                listTitle.trim() === ""
+                            }
+                        >
+                            {isLoading ? "Saving..." : "Save List"}
+                        </ActionButton>
+                        <ActionButton
                             onClick={handleCalculate}
                             disabled={
                                 isLoading ||
@@ -152,23 +175,7 @@ const NewListPage = () => {
                         >
                             {isLoading ? "Calculating..." : "Calculate"}
                         </ActionButton>
-                        <ActionButton
-                            onClick={handleCreateList} // Usa la funzione handleCreateList
-                            disabled={
-                                isLoading ||
-                                products.length === 0 ||
-                                listTitle.trim() === ""
-                            }
-                        >
-                            Create List
-                        </ActionButton>
                     </div>
-                    {recommendedProducts.length > 0 && (
-                        <div className={newListStyles.recommendedProducts}>
-                            <h3>Recommended Products</h3>
-                            <ProductList products={recommendedProducts} />
-                        </div>
-                    )}
                     {error && (
                         <div className={newListStyles.error}>{error}</div>
                     )}

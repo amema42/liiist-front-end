@@ -1,3 +1,5 @@
+// app/user/page.tsx
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -13,6 +15,9 @@ const UserHomepage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Simuliamo l'ID dell'utente per ora.
+    const userId = "12345";
+
     useEffect(() => {
         // Recupera le liste di spesa quando il componente viene montato
         fetchShoppingLists();
@@ -23,12 +28,14 @@ const UserHomepage = () => {
         setError(null);
         try {
             // Chiamata API per recuperare le liste di spesa dell'utente
-            const response = await fetch("/api/shopping-lists");
+            const response = await fetch(
+                `/api/shopping-lists?userId=${userId}`,
+            );
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
             const data = await response.json();
-            setShoppingLists(data.lists);
+            setShoppingLists(data); // Setta le liste ricevute dall'API
         } catch (err) {
             setError("Failed to fetch shopping lists");
         } finally {
@@ -41,7 +48,9 @@ const UserHomepage = () => {
     };
 
     const handleListClick = (listId) => {
-        router.push(`/supermarket/${listId}`);
+        // Naviga alla pagina dettagliata della lista (es. per visualizzare i prodotti o modificare la lista)
+        // router.push(`/edit-list?id=${listId}`);
+        router.push(`/shopping-list/${listId}`);
     };
 
     const handleNewListClick = async () => {
@@ -119,11 +128,11 @@ const UserHomepage = () => {
                                         <div className={userStyles.listDate}>
                                             Created:{" "}
                                             {new Date(
-                                                list.createdAt,
+                                                list.createdAt || Date.now(),
                                             ).toLocaleDateString()}
                                             , Last modified:{" "}
                                             {new Date(
-                                                list.updatedAt,
+                                                list.updatedAt || Date.now(),
                                             ).toLocaleDateString()}
                                         </div>
                                         <div className={userStyles.listBudget}>

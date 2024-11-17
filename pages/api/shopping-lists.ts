@@ -1,56 +1,36 @@
+// /pages/api/shopping-lists.ts
 import { NextApiRequest, NextApiResponse } from "next";
-
-// Mocked shopping lists data - In-memory store
-let shoppingLists = [
-    {
-        id: "1",
-        name: "Lista di Pasqua",
-        createdAt: "2024-10-10",
-        updatedAt: "2024-10-11",
-        budget: 100,
-    },
-    {
-        id: "2",
-        name: "Lista di Spesa Weekend",
-        createdAt: "2024-10-12",
-        updatedAt: "2024-10-13",
-        budget: 50,
-    },
-];
+import { v4 as uuidv4 } from "uuid";
+import { readShoppingLists, writeShoppingLists } from "./database";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === "GET") {
-        // Recupera tutte le liste di spesa
-        res.status(200).json({ lists: shoppingLists });
-    } else if (req.method === "POST") {
-        // Aggiunge una nuova lista di spesa
-        const { name, budget, mode, products } = req.body;
+    let shoppingLists = readShoppingLists();
 
-        if (!name || typeof budget === "undefined" || !products) {
-            return res
-                .status(400)
-                .json({
-                    error: "Missing required fields: name, budget, products",
-                });
-        }
+    if (req.method === "POST") {
+        const { name, products, budget, mode, userId } = req.body;
 
         const newList = {
-            id: (shoppingLists.length + 1).toString(),
+            id: uuidv4(),
             name,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            products,
             budget,
             mode,
-            products,
+            userId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
 
-        // Aggiungi la nuova lista a quelle esistenti
         shoppingLists.push(newList);
-
-        // Risposta con la lista appena creata
-        res.status(201).json({ list: newList });
+        writeShoppingLists(shoppingLists); // Salva i dati nel file JSON
+        res.status(201).json(newList);
+    } else if (req.method === "GET") {
+        // Recupera le liste per un utente specifico
+        const { userId } = req.query;
+        const userLists = shoppingLists.filter(
+            (list) => list.userId === userId,
+        );
+        res.status(200).json(userLists);
     } else {
-        res.setHeader("Allow", ["GET", "POST"]);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        res.status(405).json({ message: "Method Not Allowed" });
     }
 }

@@ -1,135 +1,176 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Map, Marker } from "@/components/map";
-import { ProductList } from "@/components/product-list";
-import convenienceModeStyles from "./styles/ConvenienceMode.module.css";
+"use client";
 
-const ConvenienceModePage = () => {
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import convenienceStyles from "./styles/ConvenienceMode.module.css";
+
+type Supermarket = {
+    supermarketId: string;
+    name: string;
+    street: string;
+    lat: number;
+    long: number;
+    city: string;
+    working_hours: string;
+    pickup_available: boolean;
+    zip_code: string;
+    products: Product[];
+};
+
+type Product = {
+    full_name: string;
+    img_url: string;
+    description: string;
+    quantity: number;
+    price: number;
+    price_for_kg?: number;
+    discounted_price?: number;
+    localization: {
+        grocery: string;
+        lat: number;
+        long: number;
+    };
+};
+
+const ConvenienceModePage: React.FC = () => {
     const router = useRouter();
-    const { listId } = router.query;
-    const [supermarket, setSupermarket] = useState(null);
-    const [products, setProducts] = useState([]);
-    const [totalCost, setTotalCost] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const searchParams = useSearchParams();
+    const [listTitle, setListTitle] = useState<string>("");
+    const [budget, setBudget] = useState<string>("");
+    const [products, setProducts] = useState<string[]>([]);
+    const [supermarket, setSupermarket] = useState<Supermarket | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (listId) {
-            fetchConvenienceModeData();
-        }
-    }, [listId]);
+        // Estrazione dei parametri dalla query string
+        const listId = searchParams.get("id");
+        const title = searchParams.get("listTitle") || "Shopping List";
+        const budgetParam = searchParams.get("budget") || "0";
 
-    const fetchConvenienceModeData = async () => {
-        try {
-            // Make API call to fetch the data for the Convenience Mode
-            const response = await fetch(
-                `/api/shopping-lists/${listId}/convenience-mode`,
-            );
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            setSupermarket(data.supermarket);
-            setProducts(data.products);
-            setTotalCost(data.totalCost);
-        } catch (err) {
-            setError("Failed to fetch Convenience Mode data");
-        } finally {
+        setListTitle(title);
+        setBudget(budgetParam);
+
+        if (listId) {
+            // Recupera i dati della lista tramite API
+            const fetchList = async () => {
+                try {
+                    const response = await fetch(
+                        `/api/shopping-lists/${listId}`,
+                    );
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch shopping list");
+                    }
+                    const listData = await response.json();
+
+                    // Popola i dati della lista
+                    setListTitle(listData.name);
+                    setBudget(listData.budget);
+                    setProducts(listData.products);
+
+                    // Simula una chiamata API per ottenere i supermercati
+                    const responseSupermarkets = await fetch(
+                        `/api/list-result?userId=${listData.userId}`,
+                    );
+                    if (!responseSupermarkets.ok) {
+                        throw new Error("Failed to fetch supermarkets");
+                    }
+                    const supermarketData = await responseSupermarkets.json();
+                    if (
+                        supermarketData.supermarkets &&
+                        supermarketData.supermarkets.length > 0
+                    ) {
+                        setSupermarket(supermarketData.supermarkets[0]); // Seleziona il primo supermercato per comodità
+                    } else {
+                        throw new Error(
+                            "No supermarkets found for convenience mode",
+                        );
+                    }
+                } catch (err) {
+                    setError((err as Error).message);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            fetchList();
+        } else {
+            setError("Missing list ID");
             setIsLoading(false);
         }
+    }, [searchParams]);
+
+    const handleEditList = () => {
+        const listId = searchParams.get("id");
+        if (listId) {
+            router.push(`/edit-list?id=${listId}`);
+        } else {
+            setError("No list ID found to edit");
+        }
     };
 
-    const handleBackToList = () => {
-        router.push(`/new-list?listId=${listId}`);
-    };
+    if (isLoading) {
+        return <div className={convenienceStyles.loading}>Loading...</div>;
+    }
+
+    if (error) {
+        return <div className={convenienceStyles.error}>{error}</div>;
+    }
 
     return (
-        <div className={convenienceModeStyles.container}>
-            <Card className={convenienceModeStyles.card}>
+        <div className={convenienceStyles.container}>
+            <Card className={convenienceStyles.card}>
                 <CardHeader>
-                    <CardTitle>Convenience Mode</CardTitle>
+                    <CardTitle>Modalità Comodità - {listTitle}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? (
-                        <div
-                            className={convenienceModeStyles.loading}
-                            role="status"
-                            aria-live="polite"
-                        >
-                            Loading...
-                        </div>
-                    ) : error ? (
-                        <div
-                            className={convenienceModeStyles.error}
-                            role="alert"
-                        >
-                            {error}
+                    <div>
+                        <p>Budget: €{budget}</p>
+                        <p>Prodotti: {products.join(", ")}</p>
+                    </div>
+                    <button
+                        onClick={handleEditList}
+                        className={convenienceStyles.editButton}
+                    >
+                        Modifica Lista
+                    </button>
+                    {supermarket ? (
+                        <div className={convenienceStyles.supermarketSection}>
+                            <h3>{supermarket.name}</h3>
+                            <p>
+                                {supermarket.street}, {supermarket.city} -{" "}
+                                {supermarket.zip_code}
+                            </p>
+                            <p>
+                                Orari di apertura: {supermarket.working_hours}
+                            </p>
+                            <ul className={convenienceStyles.productList}>
+                                {supermarket.products.map((product, index) => (
+                                    <li
+                                        key={index}
+                                        className={
+                                            convenienceStyles.productItem
+                                        }
+                                    >
+                                        <img
+                                            src={product.img_url}
+                                            alt={product.full_name}
+                                            className={
+                                                convenienceStyles.productImage
+                                            }
+                                        />
+                                        <div>
+                                            {product.full_name} - €
+                                            {product.price.toFixed(2)} -{" "}
+                                            {product.description}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     ) : (
-                        <>
-                            <div
-                                className={
-                                    convenienceModeStyles.supermarketInfo
-                                }
-                            >
-                                <div
-                                    className={
-                                        convenienceModeStyles.supermarketName
-                                    }
-                                >
-                                    {supermarket?.name}
-                                </div>
-                                <div
-                                    className={
-                                        convenienceModeStyles.supermarketAddress
-                                    }
-                                >
-                                    {supermarket?.address}
-                                </div>
-                                <div
-                                    className={
-                                        convenienceModeStyles.supermarketHours
-                                    }
-                                >
-                                    {supermarket?.openingHours ||
-                                        "Opening hours not available"}
-                                </div>
-                                <div className={convenienceModeStyles.map}>
-                                    <Map
-                                        center={[
-                                            supermarket?.latitude,
-                                            supermarket?.longitude,
-                                        ]}
-                                        zoom={13}
-                                    >
-                                        <Marker
-                                            position={[
-                                                supermarket?.latitude,
-                                                supermarket?.longitude,
-                                            ]}
-                                            onClick={() => {}}
-                                            aria-label={`Location of ${supermarket?.name}`}
-                                        />
-                                    </Map>
-                                </div>
-                            </div>
-                            <div className={convenienceModeStyles.productList}>
-                                <h3>Product List</h3>
-                                <ProductList products={products} />
-                            </div>
-                            <div className={convenienceModeStyles.totalCost}>
-                                <h3>Total Cost: {totalCost.toFixed(2)}€</h3>
-                            </div>
-                            <Button
-                                onClick={handleBackToList}
-                                className={convenienceModeStyles.backButton}
-                                aria-label="Back to modify the shopping list"
-                            >
-                                Back to List
-                            </Button>
-                        </>
+                        <div>No supermarket data available</div>
                     )}
                 </CardContent>
             </Card>
