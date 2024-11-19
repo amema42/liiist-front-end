@@ -61,3 +61,20 @@
     font-weight: bold;
     margin-top: 20px;
 }
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.deleteIcon {
+    color: red;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-left: 10px; /* Margine per separare l'icona dal titolo */
+}
+
+.deleteIcon:hover {
+    transform: scale(1.2);
+}

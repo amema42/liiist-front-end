@@ -1,113 +1,12 @@
 [
-  {
-    "id": "335deabf-508f-42d3-9d73-ed46ef602f73",
-    "name": "titleMEMAANO",
-    "products": [
-      "product"
-    ],
-    "budget": "10",
-    "mode": "savings",
-    "userId": "12345"
-  },
-  {
-    "id": "f79695dc-666d-4dca-84cf-a537eca786d6",
-    "name": "titleSARAAAAAAA",
-    "products": [
-      "ppp",
-      "ani"
-    ],
-    "budget": "19999",
-    "mode": "convenience",
-    "userId": "12345"
-  },
-  {
-    "id": "ab0da014-2514-474b-b2cb-f9f5962838ca",
-    "name": "2",
-    "products": [
-      "2"
-    ],
-    "budget": "-17",
-    "mode": "savings",
-    "userId": "12345",
-    "createdAt": "2024-11-17T17:33:30.204Z",
-    "updatedAt": "2024-11-17T17:33:30.204Z"
-  },
-  {
-    "id": "02e2e044-e52d-4059-9c96-5b5aac83c49b",
-    "name": "lalala",
-    "products": [
-      "product"
-    ],
-    "budget": "1",
-    "mode": "convenience",
-    "userId": "12345",
-    "createdAt": "2024-11-17T17:40:50.790Z",
-    "updatedAt": "2024-11-17T17:40:50.790Z"
-  },
-  {
-    "id": "9043c298-057c-42a9-8ace-5c9f788a7d93",
-    "name": "ls",
-    "products": [
-      "ls"
-    ],
-    "budget": "",
-    "mode": "convenience",
-    "userId": "12345",
-    "createdAt": "2024-11-17T17:42:26.440Z",
-    "updatedAt": "2024-11-17T17:42:26.440Z"
-  },
-  {
-    "id": "84bbb94a-2046-408b-a068-b3d7e06031a6",
-    "name": "titoloaiuto",
-    "products": [
-      "aiuto"
-    ],
-    "budget": "1",
-    "mode": "convenience",
-    "userId": "12345",
-    "createdAt": "2024-11-17T19:11:25.592Z",
-    "updatedAt": "2024-11-17T19:11:25.592Z"
-  },
-  {
-    "id": "a42051a8-013e-4332-9e83-330b641cd5df",
-    "name": "miaoq",
-    "products": [
-      "miao",
-      "miao",
-      "miao",
-      "miao",
-      "miao"
-    ],
-    "budget": "10",
-    "mode": "convenience",
-    "userId": "12345",
-    "createdAt": "2024-11-17T21:04:10.232Z",
-    "updatedAt": "2024-11-17T21:04:10.232Z"
-  },
-  {
-    "id": "2218a741-8b4f-4b0f-afee-7fe692e7c104",
-    "name": "list",
-    "products": [
-      "list",
-      "list",
-      "list"
-    ],
-    "budget": "10",
-    "mode": "savings",
-    "userId": "12345",
-    "createdAt": "2024-11-17T21:12:00.979Z",
-    "updatedAt": "2024-11-17T21:12:00.979Z"
-  },
-  {
-    "id": "5eccdc27-3a54-4748-af23-53540300e720",
-    "name": "NewShoppingList",
-    "products": [
-      "product1"
-    ],
-    "budget": "10",
-    "mode": "savings",
-    "userId": "12345",
-    "createdAt": "2024-11-17T21:18:38.410Z",
-    "updatedAt": "2024-11-17T21:18:38.410Z"
-  }
+    {
+        "id": "220094f9-f18c-426e-bcf8-e46a45c56328",
+        "name": "TitoloLista2",
+        "products": ["prodotto1", "prodotto2", "prodotto3", "prodotto4"],
+        "budget": "10",
+        "mode": "savings",
+        "userId": "12345",
+        "createdAt": "2024-11-18T15:51:21.126Z",
+        "updatedAt": "2024-11-18T15:51:21.126Z"
+    }
 ]

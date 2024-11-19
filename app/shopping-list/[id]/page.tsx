@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import shoppingListStyles from "./styles/ShoppingList.module.css";
 import { Button } from "@/components/ui/button";
+import { FaTrashAlt } from "react-icons/fa"; // Importa l'icona del cestino
 
 const ShoppingListPage: React.FC = () => {
     const router = useRouter();
@@ -62,6 +63,23 @@ const ShoppingListPage: React.FC = () => {
         );
     };
 
+    const handleDeleteList = async () => {
+        if (confirm("Vuoi eliminare definitivamente questa lista?")) {
+            try {
+                const response = await fetch(`/api/shopping-lists/${listId}`, {
+                    method: "DELETE",
+                });
+                if (response.ok) {
+                    router.push("/user");
+                } else {
+                    console.error("Errore durante l'eliminazione della lista");
+                }
+            } catch (err) {
+                console.error("Errore nella chiamata API:", err);
+            }
+        }
+    };
+
     return (
         <div className={shoppingListStyles.container}>
             {isLoading ? (
@@ -69,7 +87,22 @@ const ShoppingListPage: React.FC = () => {
             ) : (
                 <Card className={shoppingListStyles.card}>
                     <CardHeader>
-                        <CardTitle>{listTitle}</CardTitle>
+                        <div className={shoppingListStyles.cardHeader}>
+                            <CardTitle>{listTitle}</CardTitle>
+                            {/* Aggiungi il pulsante di eliminazione */}
+                            <FaTrashAlt
+                                className={shoppingListStyles.deleteIcon}
+                                onClick={handleDeleteList}
+                                role="button"
+                                tabIndex={0}
+                                onKeyPress={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        handleDeleteList();
+                                    }
+                                }}
+                                aria-label={`Delete shopping list ${listTitle}`}
+                            />
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {error && (

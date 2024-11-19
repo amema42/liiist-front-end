@@ -6,7 +6,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     let shoppingLists = readShoppingLists();
     const { id } = req.query;
 
-    if (req.method === "GET") {
+    if (req.method === "DELETE") {
+        shoppingLists = shoppingLists.filter((list) => list.id !== id);
+        writeShoppingLists(shoppingLists);
+        res.status(200).json({ message: "Lista eliminata con successo" });
+    } else if (req.method === "GET") {
         const list = shoppingLists.find((list) => list.id === id);
         if (list) {
             res.status(200).json(list);

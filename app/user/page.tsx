@@ -1,11 +1,10 @@
-// app/user/page.tsx
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FaTrashAlt } from "react-icons/fa"; // Importa l'icona del cestino
 import userStyles from "./styles/UserHomepage.module.css";
 
 const UserHomepage = () => {
@@ -49,7 +48,6 @@ const UserHomepage = () => {
 
     const handleListClick = (listId) => {
         // Naviga alla pagina dettagliata della lista (es. per visualizzare i prodotti o modificare la lista)
-        // router.push(`/edit-list?id=${listId}`);
         router.push(`/shopping-list/${listId}`);
     };
 
@@ -60,6 +58,25 @@ const UserHomepage = () => {
 
     const handleProfileClick = () => {
         router.push("/profile");
+    };
+
+    const handleDeleteList = async (listId) => {
+        if (confirm("Sei sicuro di voler eliminare questa lista?")) {
+            try {
+                const response = await fetch(`/api/shopping-lists/${listId}`, {
+                    method: "DELETE",
+                });
+                if (response.ok) {
+                    setShoppingLists((prevLists) =>
+                        prevLists.filter((list) => list.id !== listId),
+                    );
+                } else {
+                    console.error("Errore durante l'eliminazione della lista");
+                }
+            } catch (err) {
+                console.error("Errore nella chiamata API:", err);
+            }
+        }
     };
 
     return (
@@ -108,37 +125,66 @@ const UserHomepage = () => {
                                 <div
                                     key={list.id}
                                     className={userStyles.listItem}
-                                    onClick={() => handleListClick(list.id)}
-                                    role="button"
-                                    tabIndex={0}
-                                    onKeyPress={(e) => {
-                                        if (
-                                            e.key === "Enter" ||
-                                            e.key === " "
-                                        ) {
-                                            handleListClick(list.id);
-                                        }
-                                    }}
-                                    aria-label={`Open shopping list ${list.name}`}
                                 >
-                                    <div className={userStyles.listName}>
-                                        {list.name}
-                                    </div>
-                                    <div className={userStyles.listDetails}>
-                                        <div className={userStyles.listDate}>
-                                            Created:{" "}
-                                            {new Date(
-                                                list.createdAt || Date.now(),
-                                            ).toLocaleDateString()}
-                                            , Last modified:{" "}
-                                            {new Date(
-                                                list.updatedAt || Date.now(),
-                                            ).toLocaleDateString()}
+                                    <div
+                                        className={userStyles.listInfo}
+                                        onClick={() => handleListClick(list.id)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyPress={(e) => {
+                                            if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                            ) {
+                                                handleListClick(list.id);
+                                            }
+                                        }}
+                                        aria-label={`Open shopping list ${list.name}`}
+                                    >
+                                        <div className={userStyles.listName}>
+                                            {list.name}
                                         </div>
-                                        <div className={userStyles.listBudget}>
-                                            Budget: {list.budget}€
+                                        <div className={userStyles.listDetails}>
+                                            <div
+                                                className={userStyles.listDate}
+                                            >
+                                                Created:{" "}
+                                                {new Date(
+                                                    list.createdAt ||
+                                                        Date.now(),
+                                                ).toLocaleDateString()}
+                                                , Last modified:{" "}
+                                                {new Date(
+                                                    list.updatedAt ||
+                                                        Date.now(),
+                                                ).toLocaleDateString()}
+                                            </div>
+                                            <div
+                                                className={
+                                                    userStyles.listBudget
+                                                }
+                                            >
+                                                Budget: {list.budget}€
+                                            </div>
                                         </div>
                                     </div>
+                                    <FaTrashAlt
+                                        className={userStyles.deleteIcon}
+                                        onClick={() =>
+                                            handleDeleteList(list.id)
+                                        }
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyPress={(e) => {
+                                            if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                            ) {
+                                                handleDeleteList(list.id);
+                                            }
+                                        }}
+                                        aria-label={`Delete shopping list ${list.name}`}
+                                    />
                                 </div>
                             ))}
                         </div>
