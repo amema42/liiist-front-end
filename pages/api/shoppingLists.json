@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "id": "0e10b52a-47eb-4c33-aa56-b90ce36347e7",
+    "name": "title",
+    "products": [
+      {
+        "name": "product1",
+        "quantity": 1
+      },
+      {
+        "name": "product2",
+        "quantity": 1
+      },
+      {
+        "name": "product3",
+        "quantity": 1
+      }
+    ],
+    "budget": "40",
+    "mode": "savings",
+    "userId": "12345",
+    "createdAt": "2024-11-21T21:56:09.093Z",
+    "updatedAt": "2024-11-21T21:56:09.093Z"
+  }
+]
