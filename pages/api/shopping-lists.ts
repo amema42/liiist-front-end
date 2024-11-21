@@ -9,10 +9,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "POST") {
         const { name, products, budget, mode, userId } = req.body;
 
+        // Assicurati che i prodotti siano in un formato corretto
+        const formattedProducts = products.map((product: any) => ({
+            name: product.name,
+            quantity: product.quantity,
+        }));
+
         const newList = {
             id: uuidv4(),
             name,
-            products,
+            products: formattedProducts,
             budget,
             mode,
             userId,
@@ -30,6 +36,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             (list) => list.userId === userId,
         );
         res.status(200).json(userLists);
+    } else if (req.method === "DELETE") {
+        // Cancella una lista specifica per ID
+        const { listId } = req.query;
+        shoppingLists = shoppingLists.filter((list) => list.id !== listId);
+        writeShoppingLists(shoppingLists);
+        res.status(200).json({ message: "List deleted successfully" });
     } else {
         res.status(405).json({ message: "Method Not Allowed" });
     }

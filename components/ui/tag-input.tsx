@@ -1,23 +1,29 @@
+// components/ui/tag-input.tsx
 import React, { useState } from "react";
+import styles from "./TagInput.module.css";
 
 interface TagInputProps {
     placeholder: string;
-    onAdd: (tag: string) => void;
+    onAdd: (tag: { name: string; quantity: number }) => void;
     onRemove: (index: number) => void;
-    tags?: string[];
+    onIncreaseQuantity: (index: number) => void;
+    onDecreaseQuantity: (index: number) => void;
+    tags: { name: string; quantity: number }[];
 }
 
-export const TagInput = ({
+export const TagInput: React.FC<TagInputProps> = ({
     placeholder,
     onAdd,
     onRemove,
-    tags = [], // Default value: se `tags` non è fornito, usa un array vuoto
-}: TagInputProps) => {
+    onIncreaseQuantity,
+    onDecreaseQuantity,
+    tags,
+}) => {
     const [inputValue, setInputValue] = useState<string>("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter" && inputValue.trim() !== "") {
-            onAdd(inputValue.trim());
+            onAdd({ name: inputValue.trim(), quantity: 1 });
             setInputValue("");
         }
     };
@@ -30,30 +36,45 @@ export const TagInput = ({
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                style={{ padding: "10px", width: "100%", marginBottom: "10px" }}
+                className={styles.input}
             />
-            <div>
+            <div className={styles.tagsContainer}>
                 {tags.length > 0 ? (
                     tags.map((tag, index) => (
-                        <span
-                            key={index}
-                            style={{
-                                margin: "5px",
-                                padding: "5px",
-                                backgroundColor: "#f0f0f0",
-                            }}
-                        >
-                            {tag}
-                            <button
-                                onClick={() => onRemove(index)}
-                                style={{ marginLeft: "5px" }}
-                            >
-                                x
-                            </button>
-                        </span>
+                        <div key={index} className={styles.tag}>
+                            <span className={styles.tagName}>{tag.name}</span>
+                            <div className={styles.quantityControls}>
+                                {tag.quantity > 1 ? (
+                                    <button
+                                        onClick={() =>
+                                            onDecreaseQuantity(index)
+                                        }
+                                        className={styles.quantityButton}
+                                    >
+                                        -
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => onRemove(index)}
+                                        className={styles.removeButton}
+                                    >
+                                        x
+                                    </button>
+                                )}
+                                <span className={styles.quantityCircle}>
+                                    {tag.quantity}
+                                </span>
+                                <button
+                                    onClick={() => onIncreaseQuantity(index)}
+                                    className={styles.quantityButton}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
                     ))
                 ) : (
-                    <p>No tags added yet.</p>
+                    <p className={styles.noTags}>No tags added yet.</p>
                 )}
             </div>
         </div>

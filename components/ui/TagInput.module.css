@@ -1,0 +1,79 @@
+.input {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: px solid #ccc;
+}
+
+.tagsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    padding: 10px;
+    gap: 10px;
+}
+
+.tagName {
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantityButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantityCircle {
+    width: 32px;
+    height: 32px;
+    //border-radius: 50%;
+    //background-color: #fff;
+    border: 0px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.removeButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f28b82;
+    cursor: pointer;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noTags {
+    color: #999;
+    font-style: italic;
+}

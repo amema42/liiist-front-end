@@ -1,12 +1,1 @@
-[
-    {
-        "id": "220094f9-f18c-426e-bcf8-e46a45c56328",
-        "name": "TitoloLista2",
-        "products": ["prodotto1", "prodotto2", "prodotto3", "prodotto4"],
-        "budget": "10",
-        "mode": "savings",
-        "userId": "12345",
-        "createdAt": "2024-11-18T15:51:21.126Z",
-        "updatedAt": "2024-11-18T15:51:21.126Z"
-    }
-]
+[]

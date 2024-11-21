@@ -12,20 +12,36 @@ import newListStyles from "./styles/NewList.module.css";
 const NewListPage = () => {
     const router = useRouter();
     const [listTitle, setListTitle] = useState("");
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<
+        { name: string; quantity: number }[]
+    >([]);
     const [budget, setBudget] = useState("");
     const [mode, setMode] = useState("convenience");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleProductAdd = (product) => {
+    const handleProductAdd = (product: { name: string; quantity: number }) => {
         setProducts([...products, product]);
     };
 
-    const handleProductRemove = (index) => {
+    const handleProductRemove = (index: number) => {
         const updatedProducts = [...products];
         updatedProducts.splice(index, 1);
         setProducts(updatedProducts);
+    };
+
+    const handleIncreaseQuantity = (index: number) => {
+        const updatedProducts = [...products];
+        updatedProducts[index].quantity += 1;
+        setProducts(updatedProducts);
+    };
+
+    const handleDecreaseQuantity = (index: number) => {
+        const updatedProducts = [...products];
+        if (updatedProducts[index].quantity > 1) {
+            updatedProducts[index].quantity -= 1;
+            setProducts(updatedProducts);
+        }
     };
 
     const handleSaveList = async () => {
@@ -38,7 +54,6 @@ const NewListPage = () => {
         setError(null);
 
         try {
-            // Salva la lista facendo una chiamata POST
             const response = await fetch("/api/shopping-lists", {
                 method: "POST",
                 headers: {
@@ -49,7 +64,7 @@ const NewListPage = () => {
                     products,
                     budget,
                     mode,
-                    userId: "12345", // Placeholder, sostituire con l'ID utente effettivo
+                    userId: "12345",
                 }),
             });
 
@@ -57,7 +72,6 @@ const NewListPage = () => {
                 throw new Error("Failed to save the shopping list");
             }
 
-            // Dopo aver salvato la lista, torna alla homepage
             router.push("/user");
         } catch (err) {
             setError("Failed to save the shopping list");
@@ -76,7 +90,6 @@ const NewListPage = () => {
         setError(null);
 
         try {
-            // Salva la lista prima di calcolare
             const response = await fetch("/api/shopping-lists", {
                 method: "POST",
                 headers: {
@@ -87,7 +100,7 @@ const NewListPage = () => {
                     products,
                     budget,
                     mode,
-                    userId: "12345", // Questo è un placeholder, sostituire con ID utente effettivo
+                    userId: "12345",
                 }),
             });
 
@@ -97,7 +110,6 @@ const NewListPage = () => {
 
             const data = await response.json();
 
-            // Naviga alla modalità corretta con l'ID della lista salvata
             const route =
                 mode === "savings" ? "/savings-mode" : "/convenience-mode";
             router.push(
@@ -124,8 +136,15 @@ const NewListPage = () => {
                 </CardHeader>
                 <CardContent>
                     <div className={newListStyles.listTitle}>
+                        <label
+                            htmlFor="listTitle"
+                            className={newListStyles.label}
+                        >
+                            List Title
+                        </label>
                         <Input
-                            placeholder="List Title"
+                            id="listTitle"
+                            placeholder="Enter list title"
                             value={listTitle}
                             onChange={(e) => setListTitle(e.target.value)}
                         />
@@ -135,13 +154,19 @@ const NewListPage = () => {
                             placeholder="Add product"
                             onAdd={handleProductAdd}
                             onRemove={handleProductRemove}
+                            onIncreaseQuantity={handleIncreaseQuantity}
+                            onDecreaseQuantity={handleDecreaseQuantity}
                             tags={products}
                         />
                     </div>
                     <div className={newListStyles.budget}>
+                        <label htmlFor="budget" className={newListStyles.label}>
+                            Budget (€)
+                        </label>
                         <Input
+                            id="budget"
                             type="number"
-                            placeholder="Budget"
+                            placeholder="Enter budget"
                             value={budget}
                             onChange={(e) => setBudget(e.target.value)}
                             suffix="€"
@@ -156,6 +181,7 @@ const NewListPage = () => {
                     </div>
                     <div className={newListStyles.actions}>
                         <ActionButton
+                            className={newListStyles.actionButton}
                             onClick={handleSaveList}
                             disabled={
                                 isLoading ||
@@ -166,6 +192,7 @@ const NewListPage = () => {
                             {isLoading ? "Saving..." : "Save List"}
                         </ActionButton>
                         <ActionButton
+                            className={newListStyles.actionButton}
                             onClick={handleCalculate}
                             disabled={
                                 isLoading ||

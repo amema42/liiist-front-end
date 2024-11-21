@@ -15,15 +15,15 @@
 }
 
 .productInput {
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Distanza più grande per fare spazio ai tag */
 }
 
 .budget {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .modeToggle {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .actions {
