@@ -1,132 +1,58 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/search";
-import { ProductList } from "@/components/product-list";
-import supermarketStyles from "./styles/Supermarket.module.css";
+'use client'; // Aggiungi questa riga per marcare il file come Client Component
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'; // Ora funziona nel client
+import ProductCard from '../../../components/ui/ProductCard'; // Percorso corretto
+import SupermarketInfo from '../../../components/ui/SupermarketInfo'; // Percorso corretto
+import styles from '../../../components/ui/SupermarketInfo.module.css'; // Importiamo anche i CSS
 
 const SupermarketPage = () => {
-    const router = useRouter();
-    const { supermarketId } = router.query;
-    const [supermarket, setSupermarket] = useState(null);
-    const [featuredProducts, setFeaturedProducts] = useState([]);
-    const [searchResults, setSearchResults] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const router = useRouter(); // Ora useRouter funziona correttamente
+  const { supermarketId } = router.query; // Ottieni l'ID del supermercato dalla URL
 
-    useEffect(() => {
-        // Fetch supermarket details and featured products
-        fetchSupermarketData();
-    }, [supermarketId]);
+  const [supermarketData, setSupermarketData] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchSupermarketData = async () => {
-        try {
-            // Make API call to fetch supermarket details
-            const response = await fetch(`/api/supermarkets/${supermarketId}`);
-            const data = await response.json();
-            setSupermarket(data.supermarket);
-            setFeaturedProducts(data.featuredProducts);
-        } catch (err) {
-            setError("Failed to fetch supermarket data");
-        } finally {
-            setIsLoading(false);
-        }
+  useEffect(() => {
+    if (!supermarketId) return;
+
+    const fetchData = async () => {
+      try {
+        // Carica i dati del supermercato da /data/supermarkets.json
+        const resShop = await fetch('/data/supermarkets.json');
+        const shopData = await resShop.json();
+        const selectedShop = shopData.supermarkets.find(shop => shop.uniqueShopId === supermarketId);
+        setSupermarketData(selectedShop);
+
+        // Carica i prodotti da /data/products.json
+        const resProducts = await fetch('/data/products.json');
+        const productsData = await resProducts.json();
+        const shopProducts = productsData.products.filter(product => product.shopId === supermarketId);
+        setProducts(shopProducts);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
     };
 
-    const handleProductSearch = async (query) => {
-        try {
-            // Make API call to search for products in the supermarket
-            const response = await fetch(
-                `/api/supermarkets/${supermarketId}/products?q=${query}`,
-            );
-            const data = await response.json();
-            setSearchResults(data.products);
-        } catch (err) {
-            setError("Failed to search for products");
-        }
-    };
+    fetchData();
+  }, [supermarketId]);
 
-    const handleCreateList = () => {
-        // Redirect to the New List page with the current supermarket pre-selected
-        router.push(`/new-list?supermarketId=${supermarketId}`);
-    };
+  if (loading) return <p>Loading...</p>;
 
-    return (
-        <div className={supermarketStyles.container}>
-            <Card className={supermarketStyles.card}>
-                <CardHeader>
-                    <div className={supermarketStyles.header}>
-                        <div className={supermarketStyles.supermarketInfo}>
-                            {isLoading ? (
-                                <div className={supermarketStyles.loading}>
-                                    Loading...
-                                </div>
-                            ) : error ? (
-                                <div className={supermarketStyles.error}>
-                                    {error}
-                                </div>
-                            ) : (
-                                <>
-                                    <div
-                                        className={
-                                            supermarketStyles.supermarketName
-                                        }
-                                    >
-                                        {supermarket?.name}
-                                    </div>
-                                    <div
-                                        className={
-                                            supermarketStyles.supermarketAddress
-                                        }
-                                    >
-                                        {supermarket?.address}
-                                    </div>
-                                    <div
-                                        className={
-                                            supermarketStyles.supermarketHours
-                                        }
-                                    >
-                                        {supermarket?.openingHours ||
-                                            "Opening hours not available"}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <div className={supermarketStyles.supermarketLogo}>
-                            {/* Supermarket logo */}
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className={supermarketStyles.productSearch}>
-                        <SearchInput
-                            placeholder="Search products"
-                            onSearch={handleProductSearch}
-                            className={supermarketStyles.searchInput}
-                        />
-                    </div>
-                    {searchResults.length > 0 && (
-                        <div className={supermarketStyles.searchResults}>
-                            <ProductList products={searchResults} />
-                        </div>
-                    )}
-                    {featuredProducts.length > 0 && (
-                        <div className={supermarketStyles.featuredProducts}>
-                            <h3>Featured Products</h3>
-                            <ProductList products={featuredProducts} />
-                        </div>
-                    )}
-                    <Button
-                        onClick={handleCreateList}
-                        className={supermarketStyles.createListButton}
-                    >
-                        Create Shopping List
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-    );
+  return (
+    <div className="supermarket-page">
+      {supermarketData && <SupermarketInfo data={supermarketData} />}
+      <div className="products-list">
+        {products.map((product) => (
+          <ProductCard key={product.productId} product={product} />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default SupermarketPage;

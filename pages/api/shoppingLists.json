@@ -1,25 +1,17 @@
 [
   {
-    "id": "0e10b52a-47eb-4c33-aa56-b90ce36347e7",
-    "name": "title",
+    "id": "6839e9fe-f204-4bdd-9d24-9a2e0b9421e0",
+    "name": "Title",
     "products": [
       {
-        "name": "product1",
-        "quantity": 1
-      },
-      {
-        "name": "product2",
-        "quantity": 1
-      },
-      {
-        "name": "product3",
-        "quantity": 1
+        "name": "123",
+        "quantity": 4
       }
     ],
-    "budget": "40",
+    "budget": "123",
     "mode": "savings",
     "userId": "12345",
-    "createdAt": "2024-11-21T21:56:09.093Z",
-    "updatedAt": "2024-11-21T21:56:09.093Z"
+    "createdAt": "2024-11-29T13:01:52.343Z",
+    "updatedAt": "2024-11-29T13:01:52.343Z"
   }
 ]

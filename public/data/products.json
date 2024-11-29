@@ -1,0 +1,83 @@
+[
+    {
+      "productId": "prod1",
+      "uniqueShopId": "uniqueshopid123",
+      "full_name": "Pasta Barilla 500g",
+      "img_url": "/images/pasta-barilla.jpg",
+      "description": "Pasta di alta qualità, ideale per tutte le preparazioni.",
+      "quantity": 500,
+      "price": 1.99,
+      "price_for_kg": 3.98,
+      "discounted_price": 1.49,
+      "localization": {
+        "grocery": "Pasta",
+        "lat": 45.4567,
+        "long": 9.2345
+      }
+    },
+    {
+      "productId": "prod2",
+      "uniqueShopId": "uniqueshopid123",
+      "full_name": "Olio Extra Vergine d'Oliva",
+      "img_url": "/images/olio.jpg",
+      "description": "Olio di oliva extra vergine di alta qualità, spremuto a freddo.",
+      "quantity": 1000,
+      "price": 4.99,
+      "price_for_kg": 4.99,
+      "discounted_price": 3.99,
+      "localization": {
+        "grocery": "Olii e Aceti",
+        "lat": 45.4567,
+        "long": 9.2345
+      }
+    },
+    {
+      "productId": "prod3",
+      "uniqueShopId": "uniqueshopid456",
+      "full_name": "Riso Carnaroli 1kg",
+      "img_url": "/images/riso-carnaroli.jpg",
+      "description": "Riso Carnaroli ideale per risotti cremosi.",
+      "quantity": 1000,
+      "price": 2.49,
+      "price_for_kg": 2.49,
+      "discounted_price": 1.99,
+      "localization": {
+        "grocery": "Risi",
+        "lat": 45.5000,
+        "long": 9.2500
+      }
+    },
+    {
+      "productId": "prod4",
+      "uniqueShopId": "uniqueshopid456",
+      "full_name": "Pomodoro San Marzano 400g",
+      "img_url": "/images/pomodoro-san-marzano.jpg",
+      "description": "Pomodori San Marzano, freschi e succosi, perfetti per sughi.",
+      "quantity": 400,
+      "price": 1.29,
+      "price_for_kg": 3.22,
+      "discounted_price": 0.99,
+      "localization": {
+        "grocery": "Conserve",
+        "lat": 45.5000,
+        "long": 9.2500
+      }
+    },
+    {
+      "productId": "prod5",
+      "uniqueShopId": "uniqueshopid789",
+      "full_name": "Latte Fresco Intero 1L",
+      "img_url": "/images/latte.jpg",
+      "description": "Latte fresco intero, dal sapore ricco e naturale.",
+      "quantity": 1000,
+      "price": 1.09,
+      "price_for_kg": 1.09,
+      "discounted_price": 0.89,
+      "localization": {
+        "grocery": "Latticini",
+        "lat": 45.4789,
+        "long": 9.2890
+      }
+    }
+  ]
+  

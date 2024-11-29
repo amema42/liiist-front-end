@@ -1,0 +1,36 @@
+[
+    {
+      "uniqueShopId": "uniqueshopid123",
+      "name": "Supermercato Alfa",
+      "street": "Via Roma 10",
+      "lat": "45.4567",
+      "long": "9.2345",
+      "city": "Milano",
+      "working_hours": "Lun-Ven 8:00 - 20:00",
+      "picks_up_in_shop": true,
+      "zip_code": "20100"
+    },
+    {
+      "uniqueShopId": "uniqueshopid456",
+      "name": "Supermercato Beta",
+      "street": "Via Milano 25",
+      "lat": "45.5000",
+      "long": "9.2500",
+      "city": "Milano",
+      "working_hours": "Lun-Sab 9:00 - 19:00",
+      "picks_up_in_shop": false,
+      "zip_code": "20121"
+    },
+    {
+      "uniqueShopId": "uniqueshopid789",
+      "name": "Supermercato Gamma",
+      "street": "Viale Europa 30",
+      "lat": "45.4789",
+      "long": "9.2890",
+      "city": "Monza",
+      "working_hours": "Lun-Dom 9:00 - 22:00",
+      "picks_up_in_shop": true,
+      "zip_code": "20900"
+    }
+  ]
+  
